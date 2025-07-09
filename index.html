@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TO THE MATH - 스마트 암산 연습기</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/responsive.css">
+</head>
+<body>
+    <div class="cosmic-bg"></div>
+    <div class="floating-particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <span class="theme-toggle-icon">🌙</span>
+    </div>
+
+    <div class="streak-indicator" id="streakIndicator">
+        🔥 연속 정답: 0
+    </div>
+
+    <header class="header">
+        TO THE MATH
+    </header>
+
+    <div class="container">
+        <div class="settings">
+            <div class="setting-group">
+                <label>⏱️ 문제 간격 (초)</label>
+                <input type="number" id="timeInterval" value="3.0" min="0.5" max="30" step="0.1">
+            </div>
+            
+            <div class="setting-group">
+                <label>🔢 자릿수 선택</label>
+                <div class="digits-selector">
+                    <div class="digit-btn" data-digits="1">1 (한자리)</div>
+                    <div class="digit-btn active" data-digits="2">2 (두자리)</div>
+                    <div class="digit-btn" data-digits="3">3 (세자리)</div>
+                    <div class="digit-btn" data-digits="4">4 (네자리)</div>
+                </div>
+            </div>
+            
+            <div class="setting-group">
+                <label>➕ 연산 종류</label>
+                <select id="operationType">
+                    <option value="add">➕ 더하기</option>
+                    <option value="subtract">➖ 빼기</option>
+                    <option value="multiply">✖️ 곱하기</option>
+                    <option value="divide">➗ 나누기</option>
+                    <option value="mixed">🔄 혼합</option>
+                </select>
+            </div>
+
+            <div class="setting-group">
+                <label>🎯 난이도 설정</label>
+                <div class="difficulty-selector">
+                    <div class="difficulty-btn" data-difficulty="easy">쉬움</div>
+                    <div class="difficulty-btn active" data-difficulty="normal">보통</div>
+                    <div class="difficulty-btn" data-difficulty="hard">어려움</div>
+                    <div class="difficulty-btn" data-difficulty="expert">전문가</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-success" onclick="startPractice()">🚀 연습 시작</button>
+            <button class="btn btn-danger" onclick="stopPractice()">⏹️ 연습 중단</button>
+            <button class="btn btn-info" onclick="resetStats()">🔄 통계 초기화</button>
+            <button class="btn" onclick="showHelp()">❓ 도움말</button>
+        </div>
+
+        <div class="problem-area">
+            <div class="problem-display" id="problemDisplay">시작 버튼 클릭!</div>
+            <input type="text" class="answer-input" id="answerInput" placeholder="답을 입력하세요" disabled>
+            
+            <div class="timer-container">
+                <div class="timer-bar">
+                    <div class="timer-fill" id="timerFill"></div>
+                    <div class="timer-text" id="timerText">준비하세요</div>
+                </div>
+            </div>
+            
+            <div class="result-display" id="resultDisplay"></div>
+        </div>
+
+        <div class="statistics">
+            <div class="stat-card">
+                <div class="stat-number" id="totalProblems">0</div>
+                <div class="stat-label">총 문제</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="correctAnswers">0</div>
+                <div class="stat-label">정답 수</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="accuracyRate">0%</div>
+                <div class="stat-label">정답률</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="averageTime">0.0s</div>
+                <div class="stat-label">평균 시간</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="helpModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeHelp()">&times;</span>
+            <h2>📚 사용법 안내</h2>
+            <h3>🎯 기본 사용법</h3>
+            <p>1. 원하는 설정을 선택하세요 (시간 간격, 자릿수, 연산 종류, 난이도)</p>
+            <p>2. "연습 시작" 버튼을 클릭하세요</p>
+            <p>3. 문제가 나타나면 답을 입력하고 Enter를 누르세요</p>
+            <p>4. 시간이 초과되면 자동으로 다음 문제로 넘어갑니다</p>
+            
+            <h3>🔧 설정 옵션</h3>
+            <p><strong>자릿수:</strong> 1(한자리)부터 4(네자리)까지 선택 가능</p>
+            <p><strong>연산 종류:</strong> 더하기, 빼기, 곱하기, 나누기, 혼합 중 선택</p>
+            <p><strong>난이도:</strong> 쉬움(큰 수), 보통(중간 수), 어려움(작은 수), 전문가(복잡한 계산)</p>
+            
+            <h3>🎨 테마 설정</h3>
+            <p>우측 상단의 달/해 아이콘을 클릭하여 다크/라이트 모드를 전환할 수 있습니다.</p>
+            
+            <h3>📊 통계 정보</h3>
+            <p>총 문제 수, 정답 수, 정답률, 평균 응답 시간을 실시간으로 확인할 수 있습니다.</p>
+        </div>
+    </div>
+
+    <script src="js/Difficulty.js"></script>
+    <script src="js/Digits.js"></script>
+    <script src="js/problem.js"></script>
+    <script src="js/theme.js"></script>
+    <script src="js/timer.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/update.js"></script>
+    <script src="js/Variable_value.js"></script>
+
+</body>
+</html>
